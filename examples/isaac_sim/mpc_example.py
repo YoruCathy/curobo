@@ -42,7 +42,7 @@ parser.add_argument(
     default=False,
 )
 
-parser.add_argument("--robot", type=str, default="franka.yml", help="robot configuration to load")
+parser.add_argument("--robot", type=str, default="kinova_gen3.yml", help="robot configuration to load")
 args = parser.parse_args()
 
 ###########################################################

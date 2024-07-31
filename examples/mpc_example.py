@@ -42,14 +42,14 @@ def plot_traj(trajectory, dof):
         axs[2].plot(qdd[:, i], label=str(i))
     plt.legend()
     plt.savefig("test.png")
-    # plt.show()
+    plt.show()
 
 
 def demo_full_config_mpc():
     PLOT = True
     tensor_args = TensorDeviceType()
     world_file = "collision_test.yml"
-    robot_cfg = load_yaml(join_path(get_robot_configs_path(), "franka.yml"))["robot_cfg"]
+    robot_cfg = load_yaml(join_path(get_robot_configs_path(), "kinova_gen3.yml"))["robot_cfg"]
     robot_cfg = RobotConfig.from_dict(robot_cfg, tensor_args)
 
     mpc_config = MpcSolverConfig.load_from_robot_config(
@@ -62,13 +62,17 @@ def demo_full_config_mpc():
         use_es=False,
         use_mppi=True,
         store_rollouts=True,
-        step_dt=0.03,
+        step_dt=0.02,
     )
     mpc = MpcSolver(mpc_config)
 
     # retract_cfg = robot_cfg.cspace.retract_config.view(1, -1)
     retract_cfg = mpc.rollout_fn.dynamics_model.retract_config.unsqueeze(0)
+    print(retract_cfg)
     joint_names = mpc.joint_names
+
+    print(joint_names)
+    # exit()
 
     state = mpc.rollout_fn.compute_kinematics(
         JointState.from_position(retract_cfg + 0.5, joint_names=joint_names)
